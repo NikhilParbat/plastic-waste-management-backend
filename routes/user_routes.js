@@ -3,6 +3,6 @@ const router = express.Router();
 const { getUserProfile } = require("../controllers/user_controller");
 const { protect } = require("../middleware/auth_middleware");
 
-router.get("/profile", protect, getUserProfile);
+router.get("/profile", getUserProfile);
 
 module.exports = router;
