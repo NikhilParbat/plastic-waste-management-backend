@@ -82,6 +82,7 @@ const getAllReports = async (req, res) => {
 // @desc    Delete a report by ID
 // @route   DELETE /api/reports/:id
 // @access  Private
+// controllers/reportController.js
 const deleteReport = async (req, res) => {
   try {
     const reportId = req.params.id;
@@ -91,12 +92,16 @@ const deleteReport = async (req, res) => {
       return res.status(404).json({ message: "Report not found" });
     }
 
-    await report.remove();
+    await report.deleteOne(); // Delete the report from the database
+
     res.status(200).json({ message: "Report deleted successfully" });
   } catch (error) {
+    console.error("Error deleting report:", error); // Log any errors
     res.status(500).json({ error: error.message });
   }
 };
+
+module.exports = { deleteReport };
 
 // @desc    Edit a report by ID
 // @route   PUT /api/reports/:id
@@ -104,34 +109,33 @@ const deleteReport = async (req, res) => {
 const editReport = async (req, res) => {
   try {
     const reportId = req.params.id;
-    const { location, wasteType, description, status } = req.body; // Include 'status'
+
+    const { location, wasteType, description, status, city, area } = req.body;
     const image = req.file?.filename;
 
     const report = await Report.findById(reportId);
-
     if (!report) {
       return res.status(404).json({ message: "Report not found" });
     }
 
-    // Update fields if they are provided
     report.location = location || report.location;
+    report.city = city || report.city;
+    report.area = area || report.area;
     report.wasteType = wasteType || report.wasteType;
     report.description = description || report.description;
 
-    // Update image only if a new one was uploaded
     if (image) {
       report.image = image;
     }
 
-    // Update the status if it is provided (for admin updates)
     if (status) {
       report.status = status;
     }
 
-    // Save the updated report
     const updatedReport = await report.save();
     res.status(200).json(updatedReport);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };

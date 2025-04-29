@@ -15,7 +15,7 @@ router.post("/", upload.single("image"), createReport);
 router.get("/:id", getUserReports);
 router.get("/", getAllReports);
 router.get("/user/:id", getReportById);
-router.put("/:id", editReport);
-router.delete("/", deleteReport);
+router.put("/:id", upload.single("image"), editReport);
+router.delete("/delete/:id", deleteReport);
 
 module.exports = router;
